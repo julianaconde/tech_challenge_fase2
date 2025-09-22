@@ -5,6 +5,7 @@ import itertools
 from genetic_algorithm import mutate, order_crossover, generate_random_population, calculate_fitness, sort_population, default_problems
 from draw_functions import draw_paths, draw_plot, draw_cities
 import sys
+import time
 import numpy as np
 import pygame
 from benchmark_att48 import *
@@ -22,6 +23,8 @@ N_CITIES = 15
 POPULATION_SIZE = 100
 N_GENERATIONS = None
 MUTATION_PROBABILITY = 0.5
+DRAW_SECOND_BEST = False  # Otimização: desabilita desenho do segundo melhor caminho
+EARLY_STOP_PATIENCE = 20  # Parada antecipada: gerações sem melhoria
 
 # Define colors
 WHITE = (255, 255, 255)
@@ -69,11 +72,20 @@ generation_counter = itertools.count(start=1)  # Start the counter at 1
 population = generate_random_population(cities_locations, POPULATION_SIZE)
 best_fitness_values = []
 best_solutions = []
+gen_durations = []
+
+# Controle de parada antecipada
+BEST_EPS = 1e-9
+best_fitness_overall = float('inf')
+gens_since_improvement = 0
+best_generation = 0
 
 
 # Main game loop
 running = True
+program_start = time.perf_counter()
 while running:
+    gen_start = time.perf_counter()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -97,42 +109,71 @@ while running:
     best_fitness_values.append(best_fitness)
     best_solutions.append(best_solution)
 
+    # Atualiza controle de melhoria
+    if best_fitness < best_fitness_overall - BEST_EPS:
+        best_fitness_overall = best_fitness
+        gens_since_improvement = 0
+        best_generation = generation
+    else:
+        gens_since_improvement += 1
+
     draw_plot(screen, list(range(len(best_fitness_values))),
               best_fitness_values, y_label="Fitness - Distance (pxls)")
 
     draw_cities(screen, cities_locations, RED, NODE_RADIUS)
     draw_paths(screen, best_solution, BLUE, width=3)
-    draw_paths(screen, population[1], rgb_color=(128, 128, 128), width=1)
+    if DRAW_SECOND_BEST and len(population) > 1:
+        draw_paths(screen, population[1], rgb_color=(128, 128, 128), width=1)
 
-    print(f"Generation {generation}: Best fitness = {round(best_fitness, 2)}")
+    # (A medição da geração completa é feita após flip/tick no final do loop)
 
-    new_population = [population[0]]  # Keep the best individual: ELITISM
+    # Verifica parada antecipada antes de gerar a próxima população
+    if gens_since_improvement >= EARLY_STOP_PATIENCE:
+        print(
+            f"Parada antecipada: nenhuma melhoria no melhor fitness por {EARLY_STOP_PATIENCE} gerações consecutivas. "
+            f"Melhor = {best_fitness_overall:.2f} (geração {best_generation})."
+        )
+        running = False
 
-    while len(new_population) < POPULATION_SIZE:
+    # Geração da próxima população (pula se for parar)
+    if running:
+        new_population = [population[0]]  # Keep the best individual: ELITISM
 
-        # selection
-        # simple selection based on first 10 best solutions
-        # parent1, parent2 = random.choices(population[:10], k=2)
+        while len(new_population) < POPULATION_SIZE:
 
-        # solution based on fitness probability
-        probability = 1 / np.array(population_fitness)
-        parent1, parent2 = random.choices(population, weights=probability, k=2)
+            # selection
+            # simple selection based on first 10 best solutions
+            # parent1, parent2 = random.choices(population[:10], k=2)
 
-        # child1 = order_crossover(parent1, parent2)
-        child1 = order_crossover(parent1, parent1)
+            # solution based on fitness probability
+            probability = 1 / np.array(population_fitness)
+            parent1, parent2 = random.choices(population, weights=probability, k=2)
 
-        child1 = mutate(child1, MUTATION_PROBABILITY)
+            # child1 = order_crossover(parent1, parent2)
+            child1 = order_crossover(parent1, parent1)
 
-        new_population.append(child1)
+            child1 = mutate(child1, MUTATION_PROBABILITY)
 
-    population = new_population
+            new_population.append(child1)
+
+        population = new_population
 
     pygame.display.flip()
     clock.tick(FPS)
+
+    # Medição de duração da geração após o frame completo (cálculo + desenho + flip + tick)
+    gen_duration = time.perf_counter() - gen_start
+    gen_durations.append(gen_duration)
+    print(f"Generation {generation}: Best fitness = {round(best_fitness, 2)} | Duration = {gen_duration*1000:.2f} ms")
 
 
 # TODO: save the best individual in a file if it is better than the one saved.
 
 # exit software
+total_duration = time.perf_counter() - program_start
+print(f"Total execution time: {total_duration:.3f} s")
+if gen_durations:
+    avg_gen = sum(gen_durations) / len(gen_durations)
+    print(f"Estimated time per generation (avg): {avg_gen*1000:.2f} ms")
 pygame.quit()
 sys.exit()

@@ -1,0 +1,14 @@
+{
+  "clients": [
+    {"id": 1, "x": 120, "y": 80,  "demand": 3, "service_time": 1.5},
+    {"id": 2, "x": 200, "y": 50,  "demand": 2, "service_time": 1.0, "requires_refrigeration": true},
+    {"id": 3, "x": 260, "y": 130, "demand": 4, "service_time": 1.2},
+    {"id": 4, "x": 90,  "y": 160, "demand": 1, "service_time": 0.8, "tw_start": 20.0, "tw_end": 40.0},
+    {"id": 5, "x": 150, "y": 200, "demand": 2, "service_time": 1.1},
+    {"id": 6, "x": 320, "y": 140, "demand": 3, "service_time": 1.4}
+  ],
+  "vehicles": [
+    {"id": 1, "capacity": 7, "has_refrigeration": true,  "max_route_time": 300.0, "start_depot": [200, 150], "end_depot": [200, 150]},
+    {"id": 2, "capacity": 6, "has_refrigeration": false, "max_route_time": 300.0, "start_depot": [200, 150], "end_depot": [200, 150]}
+  ]
+}

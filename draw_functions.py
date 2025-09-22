@@ -11,6 +11,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 import matplotlib
 import pygame
 from typing import List, Tuple
+import numpy as np
 
 matplotlib.use("Agg")
 
@@ -34,12 +35,16 @@ def draw_plot(screen: pygame.Surface, x: list, y: list, x_label: str = 'Generati
 
     canvas = FigureCanvasAgg(fig)
     canvas.draw()
-    renderer = canvas.get_renderer()
-    raw_data = renderer.tostring_rgb()
+    raw_data = canvas.tostring_argb()
 
     size = canvas.get_width_height()
-    surf = pygame.image.fromstring(raw_data, size, "RGB")
+    import numpy as np
+    arr = np.frombuffer(raw_data, dtype=np.uint8).reshape((size[1], size[0], 4))
+    arr = arr[:, :, [1, 2, 3, 0]]  # ARGB -> RGBA
+    surf = pygame.image.frombuffer(arr.tobytes(), size, "RGBA")
     screen.blit(surf, (0, 0))
+    # Evita acúmulo de figuras abertas
+    plt.close(fig)
     
 def draw_cities(screen: pygame.Surface, cities_locations: List[Tuple[int, int]], rgb_color: Tuple[int, int, int], node_radius: int) -> None:
     """
@@ -72,7 +77,7 @@ def draw_paths(screen: pygame.Surface, path: List[Tuple[int, int]], rgb_color: T
     pygame.draw.lines(screen, rgb_color, True, path, width=width)
 
 
-def draw_text(screen: pygame.Surface, text: str, color: pygame.Color) -> None:
+def draw_text(screen: pygame.Surface, text: str, color: pygame.Color, height: int, cities_locations: List[Tuple[int, int]]) -> None:
     """
     Draw text on a Pygame screen.
 
@@ -80,6 +85,8 @@ def draw_text(screen: pygame.Surface, text: str, color: pygame.Color) -> None:
     - screen (pygame.Surface): The Pygame surface to draw the text on.
     - text (str): The text to be displayed.
     - color (pygame.Color): The color of the text.
+    - height (int): The height of the screen.
+    - cities_locations (List[Tuple[int, int]]): List of (x, y) coordinates representing the locations of cities.
     """
     pygame.font.init()  # You have to call this at the start
 
@@ -87,8 +94,10 @@ def draw_text(screen: pygame.Surface, text: str, color: pygame.Color) -> None:
     my_font = pygame.font.SysFont('Arial', font_size)
     text_surface = my_font.render(text, False, color)
     
-    cities_locations = []  # Assuming you have this list defined somewhere
-    text_position = (np.average(np.array(cities_locations)[:, 0]), HEIGHT - 1.5 * font_size)
+    if cities_locations:
+        text_position = (np.average(np.array(cities_locations)[:, 0]), height - 1.5 * font_size)
+    else:
+        text_position = (10, height - 1.5 * font_size)
     
     screen.blit(text_surface, text_position)
 
