@@ -136,6 +136,11 @@ if __name__ == "__main__":
         weights_refrig=args.w_refrig,
         weights_mrt=args.w_mrt,
     )
-    # Bind weights to run_ga via closure-like globals
     if args.visualize:
-        draw_solution(sol)
+        w = PenaltyWeights(
+            capacity=args.w_cap,
+            time_window=args.w_tw,
+            refrigeration=args.w_refrig,
+            max_route_time=args.w_mrt,
+        )
+        draw_solution(sol, weights=w)
