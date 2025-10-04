@@ -53,13 +53,29 @@ python vrp_ga.py --data sample_vrp.json --gens 10 --pop-size 20 --mutation 0.5 -
 #### Ajuste de restrições (opcional)
 ```bash
 python vrp_ga.py --data sample_vrp.json --gens 100 --w-cap 1000 --w-tw 500 --w-refrig 5000 --w-mrt 200 --visualize
+
+## Protegendo sua APIKEY Gemini
+
+Para proteger sua chave da API Gemini, utilize um arquivo `.env` na raiz do projeto. Nunca compartilhe sua chave diretamente no código ou em repositórios públicos.
+
+1. Crie o arquivo `.env` (se ainda não existir):
+	```bash
+	touch .env
+	```
+2. Adicione sua chave ao arquivo:
+	```env
+	GEMINI_API_KEY=coloque_sua_chave_aqui
+	```
+3. O código já está preparado para ler a chave do ambiente automaticamente.
+	- **Importante:** Não compartilhe o arquivo `.env` publicamente.
+
+Se necessário, adicione `.env` ao seu `.gitignore` para evitar o versionamento:
+```bash
+echo ".env" >> .gitignore
+```
 ```
 
 #### Integração com LLM (Gemini)
-Exportar a chave da API Gemini:
-```bash
-export GEMINI_API_KEY="SUA_CHAVE"
-```
 
 ##### CLI:
 ```bash
