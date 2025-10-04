@@ -29,6 +29,8 @@ LICENSE
 README.md
 ```
 
+![Estrutura do Projeto TSP](img/Estrutura-do-projeto-TSP.png)
+
 ## Instalação e Execução
 
 ### 1. Pré-requisitos
