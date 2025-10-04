@@ -11,24 +11,6 @@ Este projeto implementa solucionadores para o Problema do Caixeiro Viajante (TSP
 - CLI para ajuste de parâmetros e restrições.
 
 ## Estrutura do Projeto
-```
-benchmark_att48.py
-sample_vrp.json
-vrp_ga.py
-vrp_visualize.py
-vrp_models.py
-vrp_fitness.py
-vrp_split.py
-vrp_repair.py
-vrp_mutations.py
-vrp_io.py
-genetic_algorithm.py
-draw_functions.py
-tsp.py
-LICENSE
-README.md
-```
-
 ![Estrutura do Projeto TSP](img/Estrutura-do-projeto-TSP.png)
 
 ## Instalação e Execução
