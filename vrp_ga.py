@@ -8,7 +8,14 @@ import argparse
 from vrp_models import Client, Vehicle, Solution
 from vrp_split import split_giant_tour
 from vrp_repair import repair_solution
-from vrp_fitness import fitness, PenaltyWeights
+from vrp_fitness import (
+    fitness, PenaltyWeights,
+    evaluate_route_time,
+    capacity_violation,
+    time_window_violation,
+    refrigeration_violation,
+    max_route_time_violation,
+)
 from vrp_mutations import mutate_vrp
 from genetic_algorithm import order_crossover
 from vrp_io import load_vrp_from_json
@@ -144,3 +151,26 @@ if __name__ == "__main__":
             max_route_time=args.w_mrt,
         )
         draw_solution(sol, weights=w)
+
+    # Exportação automática dos dados das rotas para relatório
+    def exportar_rotas_txt(sol, arquivo="rotas_otimizadas.txt"):
+        with open(arquivo, "w") as f:
+            f.write("Relatório de Rotas Otimizadas\n\n")
+            for idx, route in enumerate(sol.routes):
+                f.write(f"Rota {idx+1}:\n")
+                f.write(f"  Veículo: {route.vehicle.id}\n")
+                f.write(f"  Clientes: {[c.id for c in route.clients]}\n")
+                f.write(f"  Demanda total: {route.total_demand()}\n")
+                f.write(f"  Distância: {route.distance():.2f}\n")
+                f.write(f"  Tempo estimado: {evaluate_route_time(route):.2f}\n")
+                f.write(f"  Penalidades: cap={capacity_violation(route):.2f}, tw={time_window_violation(route):.2f}, refrig={refrigeration_violation(route):.2f}, mrt={max_route_time_violation(route):.2f}\n\n")
+            f.write("\nResumo:\n")
+            total_dist = sum(r.distance() for r in sol.routes)
+            tot_cap_v = sum(capacity_violation(r) for r in sol.routes)
+            tot_tw_v = sum(time_window_violation(r) for r in sol.routes)
+            tot_refr_v = sum(refrigeration_violation(r) for r in sol.routes)
+            tot_mrt_v = sum(max_route_time_violation(r) for r in sol.routes)
+            f.write(f"Distância total: {total_dist:.2f}\n")
+            f.write(f"Violação total: cap={tot_cap_v:.2f}, tw={tot_tw_v:.2f}, refrig={tot_refr_v:.2f}, mrt={tot_mrt_v:.2f}\n")
+
+    exportar_rotas_txt(sol)

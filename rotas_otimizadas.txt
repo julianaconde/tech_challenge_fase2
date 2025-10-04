@@ -1,0 +1,22 @@
+Relatório de Rotas Otimizadas
+
+Rota 1:
+  Veículo: 1
+  Clientes: [4, 1, 5]
+  Demanda total: 6.0
+  Distância: 390.30
+  Tempo estimado: 393.70
+  Penalidades: cap=0.00, tw=70.45, refrig=0.00, mrt=93.70
+
+Rota 2:
+  Veículo: 2
+  Clientes: [3, 6, 2]
+  Demanda total: 9.0
+  Distância: 374.07
+  Tempo estimado: 377.67
+  Penalidades: cap=3.00, tw=0.00, refrig=1.00, mrt=77.67
+
+
+Resumo:
+Distância total: 764.37
+Violação total: cap=3.00, tw=70.45, refrig=1.00, mrt=171.37

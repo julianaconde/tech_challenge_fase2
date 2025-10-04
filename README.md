@@ -11,6 +11,7 @@ Este projeto implementa solucionadores para o Problema do Caixeiro Viajante (TSP
 - CLI para ajuste de parâmetros e restrições.
 
 ## Estrutura do Projeto
+
 ![Estrutura do Projeto TSP](img/Estrutura-do-projeto-TSP.png)
 
 ## Instalação e Execução
@@ -19,16 +20,17 @@ Este projeto implementa solucionadores para o Problema do Caixeiro Viajante (TSP
 - Python 3.10+
 - pip
 
-### 2. Ambiente Virtual
+### 2. Ambiente Virtual (Recomendado)
+Crie e ative o ambiente virtual **antes de instalar qualquer pacote**:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate  # Linux/macOS
 .venv\Scripts\activate    # Windows
 ```
 
-### 3. Instale as dependências
+### 3. Instale as dependências no ambiente virtual
 ```bash
-pip install pygame==2.6.0
+pip install pygame==2.6.0 requests flask
 ```
 
 ### 4. Execução
@@ -53,6 +55,26 @@ python vrp_ga.py --data sample_vrp.json --gens 10 --pop-size 20 --mutation 0.5 -
 python vrp_ga.py --data sample_vrp.json --gens 100 --w-cap 1000 --w-tw 500 --w-refrig 5000 --w-mrt 200 --visualize
 ```
 
+#### Integração com LLM (Gemini)
+Exportar a chave da API Gemini:
+```bash
+export GEMINI_API_KEY="SUA_CHAVE"
+```
+
+##### CLI:
+```bash
+python llm_cli.py instrucoes --rota "Rota otimizada: ..."
+python llm_cli.py relatorio --dados "Dados agregados das rotas"
+python llm_cli.py melhorias --historico "Histórico de rotas"
+python llm_cli.py pergunta --pergunta "Qual a rota mais eficiente?" --contexto "Dados das rotas"
+```
+
+##### Web:
+```bash
+python llm_web.py
+```
+Acesse http://localhost:5000 no navegador.
+
 ## Controles da Visualização
 - `Q`: sair
 - `P`: mostrar/ocultar painel lateral
@@ -67,6 +89,7 @@ python vrp_ga.py --data sample_vrp.json --gens 100 --w-cap 1000 --w-tw 500 --w-r
 ## Saídas e Resultados
 - Console: fitness por geração, tempo total, penalidades.
 - Janela Pygame: mapa, rotas, gráfico de fitness (TSP), painel de métricas (VRP), tooltip detalhado.
+- LLM: instruções, relatórios, sugestões e respostas em linguagem natural.
 
 ## Licença
 MIT
