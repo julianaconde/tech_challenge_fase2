@@ -2,6 +2,7 @@
 Template Flask para interface web com Gemini via llm_integration.py
 Necessário: pip install flask requests
 """
+
 from flask import Flask, render_template_string, request
 from llm_integration import (
     gerar_instrucoes_rota,
@@ -9,6 +10,10 @@ from llm_integration import (
     sugerir_melhorias,
     responder_pergunta,
 )
+
+# Carregar variáveis do .env automaticamente
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -50,10 +55,9 @@ def index():
         tipo = request.form['tipo']
         dados = request.form['dados']
         pergunta = request.form.get('pergunta', '')
-        
-        # Chave Gemini diretamente no código (temporário para teste)
-        api_key = "AIzaSyAxiTsdSN8mJrBtpCVb-DWuOjkTUxR6IZ8"
-        
+        # Chave Gemini via variável de ambiente
+        import os
+        api_key = os.getenv("GEMINI_API_KEY")
         if tipo == 'instrucoes':
             resposta = gerar_instrucoes_rota(dados, api_key)
         elif tipo == 'relatorio':
